@@ -2,8 +2,6 @@
 
 Este é um projeto desenvolvido com [Next.js](https://nextjs.org), criado com [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-![Preview da Aplicação](./public/preview.png)
-
 ## 🚀 Como Rodar o Projeto
 
 1. **Clone o repositório**
@@ -31,4 +29,5 @@ Este é um projeto desenvolvido com [Next.js](https://nextjs.org), criado com [`
 ![Preview do Projeto](public/figma.png)
 
 📝 Autor: Luis Eduardo Araujo F da Silva
+
 📧 Contato: lfdasilva9@hotmail.com
