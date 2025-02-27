@@ -1,3 +1,4 @@
+import AddIcon from "@mui/icons-material/Add";
 import {
   Box,
   Button,
@@ -7,58 +8,29 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
-import AddIcon from '@mui/icons-material/Add';
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useProducts } from "../hooks/useProducts";
 import { AppRoutes } from "../routes/AppRoutes";
 import { ProductService } from "../service/ProductService";
-import { Product } from "../types/Product";
 import { ProductItem } from "./ProductItem";
 
 export function ProductList() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [limit, setLimit] = useState<number>(10);
+  const [limit, setLimit] = useState<number>(20);
   const [category, setCategory] = useState<string>("all");
   const [priceOrder, setPriceOrder] = useState<string>("default");
-  const [categories, setCategories] = useState<string[]>([]);
+
   const productService = new ProductService();
+
+  const { products, categories, loadProducts } = useProducts(
+    productService,
+    limit,
+    category,
+    priceOrder
+  );
+
   const router = useRouter();
-
-  useEffect(() => {
-    loadCategories();
-    loadProducts();
-  }, [limit, category, priceOrder]);
-
-  // 🔹 Buscar categorias disponíveis
-  const loadCategories = async () => {
-    const data = await productService.getCategoriesAll();
-    setCategories(data);
-  };
-
-  // 🔹 Buscar e filtrar produtos
-  const loadProducts = async () => {
-    let data = await productService.getPaginationProducts(limit);
-
-    // 🔹 Filtra por categoria (se não for "all")
-    if (category !== "all") {
-      data = data.filter((product) => product.category === category);
-    }
-
-    // 🔹 Ordena por rating (do maior para o menor)
-    data = data
-      .filter((product) => product.rating && product.rating.rate !== undefined)
-      .sort((a, b) => b.rating.rate - a.rating.rate);
-
-    // 🔹 Ordena por preço, se necessário
-    if (priceOrder === "low-to-high") {
-      data.sort((a, b) => a.price - b.price);
-    } else if (priceOrder === "high-to-low") {
-      data.sort((a, b) => b.price - a.price);
-    }
-
-    setProducts(data);
-  };
 
   return (
     <Box>
@@ -129,11 +101,7 @@ export function ProductList() {
       <Grid container spacing={3}>
         {products.map((product, index) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
-            <ProductItem
-              product={product}
-              onDelete={loadProducts}
-              isTopRated={index < 3}
-            />
+            <ProductItem product={product} onDelete={loadProducts} />
           </Grid>
         ))}
       </Grid>
