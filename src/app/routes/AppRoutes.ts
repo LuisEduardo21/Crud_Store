@@ -3,3 +3,5 @@ export const AppRoutes = {
     PRODUCTS: "/products",
     CREATE_PRODUCT: "/products/create",
   };
+
+  

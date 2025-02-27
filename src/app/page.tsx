@@ -1,6 +1,5 @@
-import { ProductCreate } from "./pages/ProductCreate";
-
+import  ProductsPage  from "./products/page";
 
 export default function Home() {
-  return <ProductCreate />;
+  return <ProductsPage />;
 }

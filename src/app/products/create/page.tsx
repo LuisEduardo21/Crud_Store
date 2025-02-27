@@ -1,9 +1,9 @@
 "use client";
 import { Box, Container } from "@mui/material";
 import { useState } from "react";
-import { ProductForm } from "../components/ProductForm";
+import { ProductForm } from "../../components/ProductForm";
 
-export function ProductCreate() {
+export default function ProductCreate() {
   const [refresh, setRefresh] = useState(false);
 
   return (
