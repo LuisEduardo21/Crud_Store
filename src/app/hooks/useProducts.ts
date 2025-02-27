@@ -21,7 +21,7 @@ export function useProducts(
     setCategories(data);
   };
 
-  const filterProducts = (products: Product[]): Product[] => {
+  const filterProducts = (products: Product[] = []): Product[] => {
     let filtered = [...products];
 
     if (category !== "all") {
