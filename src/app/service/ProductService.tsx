@@ -16,6 +16,18 @@ export class ProductService {
       throw new Error("Erro ao criar produto");
     }
   }
+  async edit(product: Product, id: string): Promise<Product> {
+    try {
+      const response: AxiosResponse<Product> = await axios.put<Product>(
+        `${API_URL}/${id}`,
+        product
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao criar produto:", error);
+      throw new Error("Erro ao criar produto");
+    }
+  }
 
   async getAll(): Promise<Product[]> {
     try {
@@ -26,6 +38,30 @@ export class ProductService {
     } catch (error) {
       console.error("Erro ao buscar produtos:", error);
       throw new Error("Erro ao buscar produtos");
+    }
+  }
+
+  async getPaginationProducts(limit: number): Promise<Product[]> {
+    try {
+      const response: AxiosResponse<Product[]> = await axios.get<Product[]>(
+        `${API_URL}?limit=${limit}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("❌ Erro ao buscar produtos:", error);
+      throw new Error("Erro ao buscar produtos");
+    }
+  }
+
+  async getProductId(id: string): Promise<Product> {
+    try {
+      const response: AxiosResponse<Product> = await axios.get<Product>(
+        `${API_URL}/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao buscar produto:", error);
+      throw new Error("Erro ao buscar produto");
     }
   }
 
@@ -42,6 +78,18 @@ export class ProductService {
     try {
       const response: AxiosResponse<string[]> = await axios.get<string[]>(
         `${API_URL}/categories`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao buscar categorias:", error);
+      throw new Error("Erro ao buscar categorias");
+    }
+  }
+
+  async getCategories(name: string): Promise<string[]> {
+    try {
+      const response: AxiosResponse<string[]> = await axios.get<string[]>(
+        `${API_URL}/category/${name}`
       );
       return response.data;
     } catch (error) {
