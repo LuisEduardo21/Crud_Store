@@ -1,19 +1,18 @@
 import {
+  Alert,
   Box,
   Button,
   Card,
   CardContent,
   CardMedia,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
+  Snackbar,
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { ProductService } from "../service/ProductService";
+import { useProductActions } from "../hooks/useProductActions";
 import { Product } from "../types/Product";
+import { EditProductDialog } from "./modals/EditProductDialog";
+import { DeleteProductDialog } from "./modals/DeleteProductDialog";
 
 interface Props {
   product: Product;
@@ -21,27 +20,10 @@ interface Props {
 }
 
 export function ProductItem({ product, onDelete }: Props) {
-  const productService = new ProductService();
-  const [open, setOpen] = useState(false); // 🔹 Estado para controlar o modal
-
-  // 🔹 Função para abrir o modal
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
-  // 🔹 Função para fechar o modal
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  // 🔹 Função para excluir o produto
-  const handleDelete = async () => {
-    if (product.id) {
-      await productService.delete(product.id);
-      onDelete();
-      handleClose(); // 🔹 Fecha o modal após excluir
-    }
-  };
+  const { deleteProduct, editProduct, snackbar, closeSnackbar } =
+    useProductActions();
+  const [openEdit, setOpenEdit] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
 
   return (
     <>
@@ -53,7 +35,6 @@ export function ProductItem({ product, onDelete }: Props) {
           borderRadius: 4,
         }}
       >
-        {/* Exibir a Imagem */}
         {product.image && (
           <CardMedia
             component="img"
@@ -62,7 +43,6 @@ export function ProductItem({ product, onDelete }: Props) {
             alt={product.name}
           />
         )}
-
         <CardContent
           sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
         >
@@ -75,12 +55,16 @@ export function ProductItem({ product, onDelete }: Props) {
           </Typography>
           <Typography variant="h6">R$ {product.price.toFixed(2)}</Typography>
           <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Button variant="outlined" sx={{ mb: 1 }}>
+            <Button
+              variant="outlined"
+              sx={{ mb: 1 }}
+              onClick={() => setOpenEdit(true)}
+            >
               Editar
             </Button>
             <Button
               variant="contained"
-              onClick={handleOpen} // 🔹 Abre o modal ao clicar
+              onClick={() => setOpenDelete(true)}
               sx={{ backgroundColor: "#BF073B" }}
             >
               Excluir
@@ -89,23 +73,28 @@ export function ProductItem({ product, onDelete }: Props) {
         </CardContent>
       </Card>
 
-      {/* 🔹 Modal de confirmação */}
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Confirmar Exclusão</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Tem certeza que deseja excluir o produto <b>{product.name}</b>? Essa ação não pode ser desfeita.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancelar
-          </Button>
-          <Button onClick={handleDelete} color="error" variant="contained">
-            Excluir
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <EditProductDialog
+        open={openEdit}
+        onClose={() => setOpenEdit(false)}
+        onSave={(p) => editProduct(p, () => setOpenEdit(false))}
+        product={product}
+      />
+      <DeleteProductDialog
+        open={openDelete}
+        onClose={() => setOpenDelete(false)}
+        onConfirm={() => deleteProduct(product.id, onDelete)}
+        productName={product.name}
+      />
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={closeSnackbar}
+      >
+        <Alert onClose={closeSnackbar} severity={snackbar.severity}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
